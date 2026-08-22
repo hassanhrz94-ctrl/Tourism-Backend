@@ -46,10 +46,10 @@ async function run() {
 
 run();
 
-app.get('/users', async (req, res) => {
+app.get('/destination', async (req, res) => {
 
   try {
-    const result = await bookingCollection.find().toArray();
+    const result = await destinationCollection.find().toArray();
 
     res.send(result);
   } catch (error) {
