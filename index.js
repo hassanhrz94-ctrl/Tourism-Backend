@@ -1,7 +1,7 @@
 const dns = require('node:dns').promises;
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
 
@@ -65,7 +65,12 @@ app.get('/destination', async (req, res) => {
   const result = await destinationCollection.insertOne(newDestination)
   res.json(result)
  })
-
+  // for details page 
+   app.get('/destination/:id', async(req,res)=>{
+        const {id} = req.params;
+        const result = await destinationCollection.findOne({_id:new ObjectId(id)})
+        res.json(result)
+   })
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
