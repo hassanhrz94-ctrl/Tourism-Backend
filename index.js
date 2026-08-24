@@ -80,6 +80,13 @@ app.get('/destination', async (req, res) => {
   })
 
   // for update
+   app.patch('/destination/:id', async(req,res)=>{
+    const {id}=req.params;
+    const updateData =req.body;
+    const result = await destinationCollection.updateOne({_id: new ObjectId (id)},
+  {$set:updateData});
+  res.json(result)
+   })
  
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
