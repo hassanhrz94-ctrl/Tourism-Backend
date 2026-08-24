@@ -32,7 +32,7 @@ async function run() {
     const db = client.db('tourism');
 
     // Assign collection here
-       bookingCollection = db.collection('users');
+       bookingCollection = db.collection('bookings');
        destinationCollection = db.collection('destination')
 
     await client.db("admin").command({ ping: 1 });
@@ -71,6 +71,16 @@ app.get('/destination', async (req, res) => {
         const result = await destinationCollection.findOne({_id:new ObjectId(id)})
         res.json(result)
    })
+
+  //  for delete
+  app.delete('/destination/:id', async(req,res)=>{
+   const {id}=req.params;
+   const result =await destinationCollection.deleteOne({_id:new ObjectId(id)});
+   res.json(result)
+  })
+
+  // for update
+ 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
