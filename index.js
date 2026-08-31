@@ -59,6 +59,7 @@ app.get('/destination', async (req, res) => {
     });
   }
 });
+
 // destination post method
  app.post('/destination', async(req, res)=>{
   const newDestination = req.body;
@@ -95,7 +96,7 @@ app.get('/destination', async (req, res) => {
 
       res.json(result);
     });
-
+ 
    app.post('/booking',async(req,res)=>{
    const bookingData = req.body;
    const result = await bookingCollection.insertOne(bookingData)
@@ -111,3 +112,5 @@ app.get('/destination', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
+jfosoas
