@@ -4,6 +4,7 @@ dns.setServers(['8.8.8.8', '8.8.4.4']);
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
+const { createRemoteJWKSet, jwtVerify } = require('jose-cjs');
 
 
 const app = express();
@@ -22,6 +23,28 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });
+
+// const JWKS = createRemoteJWKSet(new URL(`${process.env.CLIENT_URL}/api/auth/jwks`));
+
+const verifyToken = async (req, res, next) => {
+  const authHeader = req?.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  const token = authHeader.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    const { payload } = await jwtVerify(token, JWKS);
+    console.log(payload);
+    next();
+  } catch (error) {
+    return res.status(403).json({ message: "Forbidden" });
+  }
+};
+
 
 let bookingCollection;
 let destinationCollection;
@@ -68,7 +91,7 @@ app.get('/destination', async (req, res) => {
   res.json(result)
  })
   // for details page 
-   app.get('/destination/:id', async(req,res)=>{
+   app.get('/destination/:id', verifyToken, async(req,res)=>{
         const {id} = req.params;
         const result = await destinationCollection.findOne({_id:new ObjectId(id)})
         res.json(result)
@@ -98,13 +121,13 @@ app.get('/destination', async (req, res) => {
       res.json(result);
     });
  
-   app.post('/booking',async(req,res)=>{
+   app.post('/booking',  verifyToken, async(req,res)=>{
    const bookingData = req.body;
    const result = await bookingCollection.insertOne(bookingData)
    res.json(result)
    })
 
-   app.delete('/booking/:bookingId',async(req,res)=>{
+   app.delete('/booking/:bookingId', verifyToken,  async(req,res)=>{
     const {bookingId} = req.params;
     const result = await bookingCollection.deleteOne({_id:new ObjectId(bookingId)})
     res.json(result)
